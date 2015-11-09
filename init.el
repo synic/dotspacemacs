@@ -13,7 +13,8 @@ values."
    dotspacemacs-distribution 'spacemacs
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '(
+                                           "~/.spacemacs.d/private")
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
@@ -318,6 +319,11 @@ user code."
   ;; Add `~/.emacs.d/libs' to the load-path, so that our custom libraries can be
   ;; found (specifically, `evil-vimish-fold' is not on melpa)
   (add-to-list 'load-path (expand-file-name  "~/.emacs.d/libs/"))
+
+  ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
+  ;; yasnippet
+  (add-to-list 'yas-snippet-dirs
+               (expand-file-path "~/.spacemacs.d/private/snippets"))
 
   ;; Add `~/.emacs.d/themes' to the theme load path, so that our custom themes
   ;; are loadable by placing them in `dotspacemacs-themes`
