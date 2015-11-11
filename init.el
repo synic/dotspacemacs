@@ -43,7 +43,7 @@ values."
      version-control
      lua
      colors
-     perspectives
+     spacemacs-layouts
      vimscript
      (c-c++ :variables
             c-c++-enable-clang-support t)
@@ -59,7 +59,8 @@ values."
                                       evil-visual-mark-mode
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(
+                                    flycheck-pos-tip)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -127,11 +128,21 @@ values."
    dotspacemacs-command-key ":"
    ;; If non nil `Y' is remapped to `y$'. (default t)
    dotspacemacs-remap-Y-to-y$ t
+   ;; Name of the default layout (default "Default")
+   dotspacemacs-default-layout-name "D"
+   ;; If non nil the default layout name is displayed in the mode-line.
+   ;; (default nil)
+   dotspacemacs-display-default-layout t
+   ;; If non nil then the last auto saved layouts are resume automatically upon
+   ;; start. (default nil)
+   dotspacemacs-auto-resume-layouts t
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
    dotspacemacs-auto-save-file-location 'cache
+   ;; Maximum number of rollback slots to keep in the cache. (default 5)
+   dotspacemacs-max-rollback-slots 5
    ;; If non nil then `ido' replaces `helm' for some commands. For now only
    ;; `find-files' (SPC f f), `find-spacemacs-file' (SPC f e s), and
    ;; `find-contrib-file' (SPC f e c) are replaced. (default nil)
@@ -320,11 +331,6 @@ user code."
   ;; found (specifically, `evil-vimish-fold' is not on melpa)
   (add-to-list 'load-path (expand-file-name  "~/.emacs.d/libs/"))
 
-  ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
-  ;; yasnippet
-  (add-to-list 'yas-snippet-dirs
-               (expand-file-path "~/.spacemacs.d/private/snippets"))
-
   ;; Add `~/.emacs.d/themes' to the theme load path, so that our custom themes
   ;; are loadable by placing them in `dotspacemacs-themes`
   (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/")))
@@ -352,12 +358,24 @@ layers configuration. You are free to put any user code."
    projectile-globally-ignored-file-suffixes '(".pyc" ".rst")
    ;; Enable web-mode engine detection
    web-mode-enable-engine-detection t
+   ;; Make magit branch changes update the modeline
+   auto-revert-check-vc-info t
    ;; Set the default web-mode engine for .html files to "django"
    web-mode-engines-alist '(("django" . "\\.html\\'")))
+
+  ;; Enable highlighting of git commit messages when emacs is $EDITOR
+  (global-git-commit-mode t)
 
   ;; set up evil escape
   (setq-default evil-escape-key-sequence "fd"
                 evil-escape-delay .2)
+
+  ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
+  ;; yasnippets
+  (add-hook 'yas-before-expand-snippet-hook
+            (lambda ()
+              (add-to-list 'yas-snippet-dirs
+                           (expand-file-name "~/.spacemacs.d/private/snippets"))))
 
   (add-hook 'hack-local-variables-hook
             (lambda ()
@@ -387,6 +405,16 @@ layers configuration. You are free to put any user code."
                 (setq fill-column 80
                       tab-width 2)))
 
+  ;; Org
+  (add-hook 'org-mode-hook
+            (lambda ()
+              ;; Enable fill column indicator
+              (fci-mode t)
+              ;; Turn on line numbering
+              (linum-mode t)
+              ;; Enable automatic line wrapping at fill column
+              (auto-fill-mode t)))
+
   ;; Elisp
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
@@ -414,7 +442,7 @@ layers configuration. You are free to put any user code."
   (advice-add 'spacemacs/find-dotfile :around 'ao/find-dotfile)
   ;; Make `gg' and `G' do the correct thing
   (eval-after-load "dired-mode"
-    (evilify dired-mode dired-mode-map
+    (evilified-state-evilify dired-mode dired-mode-map
              [mouse-1] 'diredp-find-file-reuse-dir-buffer
              [mouse-2] 'dired-find-alternate-file
              "f"  'helm-find-files
@@ -456,6 +484,9 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key "ow" 'ao/what-face)
   (evil-leader/set-key "ob" 'ao/show-file-name)
   (evil-leader/set-key "oa" 'avy-goto-char-2)
+
+  ;; Try to fix persistent perspectives
+  (setq persp-auto-save-persps-to-their-file nil)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
