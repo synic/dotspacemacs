@@ -359,12 +359,16 @@ layers configuration. You are free to put any user code."
    ;; Enable web-mode engine detection
    web-mode-enable-engine-detection t
    ;; Make magit branch changes update the modeline
-   auto-revert-check-vc-info t
+   auto-revert-check-vc-info nil
    ;; Set the default web-mode engine for .html files to "django"
    web-mode-engines-alist '(("django" . "\\.html\\'")))
 
   ;; Enable highlighting of git commit messages when emacs is $EDITOR
   (global-git-commit-mode t)
+
+  ;; Make the cursor in non-focused windows a bar, so you can see the ace-window
+  ;; leading char better
+  (setq-default cursor-in-non-selected-windows 'bar)
 
   ;; set up evil escape
   (setq-default evil-escape-key-sequence "fd"
@@ -410,8 +414,10 @@ layers configuration. You are free to put any user code."
             (lambda ()
               ;; Enable fill column indicator
               (fci-mode t)
-              ;; Turn on line numbering
-              (linum-mode t)
+              ;; Turn off line numbering, it makes org so slow
+              (linum-mode -1)
+              ;; Set fill column to 79
+              (setq fill-column 79)
               ;; Enable automatic line wrapping at fill column
               (auto-fill-mode t)))
 
