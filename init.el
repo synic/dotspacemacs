@@ -24,7 +24,6 @@ values."
      xkcd
      emacs-lisp
      git
-     gtags
      dash
      yaml
      github
@@ -40,7 +39,8 @@ values."
      django
      syntax-checking
      spell-checking
-     version-control
+     (version-control :variables
+                      version-control-diff-tool 'diff-hl)
      lua
      colors
      spacemacs-layouts
@@ -75,6 +75,11 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
+   ;; possible. Set it to nil if you have no way to use HTTPS in your
+   ;; environment, otherwise it is strongly recommended to let it set to t.
+   ;; (default t)
+   dotspacemacs-elpa-https t
    ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
@@ -135,7 +140,7 @@ values."
    dotspacemacs-display-default-layout t
    ;; If non nil then the last auto saved layouts are resume automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts t
+   dotspacemacs-auto-resume-layouts nil
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
@@ -262,16 +267,6 @@ M-x ao/what-face."
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-(defun ao/expand-completion-table (orig-fun &rest args)
-  "Extract all symbols from COMPLETION-TABLE before calling projectile--tags."
-  (let ((completion-table (all-completions "" (car args))))
-    (funcall orig-fun completion-table)))
-
-(defun ao/find-dotfile (orig-fun &rest args)
-  "Always follow symlink when using `SPC f e d'."
-  (let ((vc-follow-symlinks t))
-    (apply orig-fun args)))
-
 (defun ao/show-file-name ()
   "Show the full path of the current buffer."
   (interactive)
@@ -311,7 +306,8 @@ M-x ao/what-face."
   )
 
 (defun load-framegeometry ()
-  "Loads ~/.emacs.d/framegeometry which should load the previous frame's geometry."
+  "Loads ~/.emacs.d/framegeometry which should load the previous frame's
+geometry."
   (let ((framegeometry-file (expand-file-name "~/.emacs.d/framegeometry")))
     (when (file-readable-p framegeometry-file)
       (load-file framegeometry-file)))
@@ -445,7 +441,6 @@ layers configuration. You are free to put any user code."
   (define-key evil-normal-state-map (kbd "_") 'projectile-dired)
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
   (setq diredp-hide-details-initially-flag nil)
-  (advice-add 'spacemacs/find-dotfile :around 'ao/find-dotfile)
   ;; Make `gg' and `G' do the correct thing
   (eval-after-load "dired-mode"
     (evilified-state-evilify dired-mode dired-mode-map
@@ -468,15 +463,6 @@ layers configuration. You are free to put any user code."
   ;; Show marks like ^, [, ] in visual-mark-mode
   (setq evil-visual-mark-exclude-marks '())
 
-  ;; Tags
-  (advice-add 'projectile--tags :around #'ao/expand-completion-table)
-  (spacemacs/helm-gtags-define-keys-for-mode 'python-mode)
-
-  ;; Gtags redefines `SPC m g g', and I like anaconda's find better, so restore it.
-  (evil-leader/set-key "mgg" 'anaconda-mode-find-definitions)
-  ;; But, the old behavior might still be useful.  Bind it to `SPC m g o'
-  (evil-leader/set-key "mgo" 'helm-gtags-dwim)
-
   ;; `SPC w O' - close all the win
   ;; Same as "close other tabs" in chrome
   (evil-leader/set-key "wO" 'delete-other-windows)
@@ -490,9 +476,6 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key "ow" 'ao/what-face)
   (evil-leader/set-key "ob" 'ao/show-file-name)
   (evil-leader/set-key "oa" 'avy-goto-char-2)
-
-  ;; Try to fix persistent perspectives
-  (setq persp-auto-save-persps-to-their-file nil)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
