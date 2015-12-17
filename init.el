@@ -38,9 +38,9 @@ values."
      python
      django
      syntax-checking
-     spell-checking
-     (version-control :variables
-                      version-control-diff-tool 'diff-hl)
+     (spell-checking :variables
+                     spell-checking-enable-by-default nil)
+     version-control
      lua
      colors
      spacemacs-layouts
@@ -57,6 +57,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dired+
                                       evil-visual-mark-mode
+                                      zenburn-theme
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -78,8 +79,15 @@ values."
    ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
+   ;; This variable has no effect if Emacs is launched with the parameter
+   ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
+   ;; Maximum allowed time in seconds to contact an ELPA repository.
+   dotspacemacs-elpa-timeout 5
+   ;; If non nil then spacemacs will check for updates at startup
+   ;; when the current branch is not `develop'. (default t)
+   dotspacemacs-check-for-update t
    ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
@@ -126,6 +134,14 @@ values."
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
    ;; (default "C-M-m)
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; These variables control whether separate commands are bound in the GUI to
+   ;; the key pairs C-i, TAB and C-m, RET.
+   ;; Setting it to a non-nil value, allows for separate commands under <C-i>
+   ;; and TAB or <C-m> and RET.
+   ;; In the terminal, these pairs are generally indistinguishable, so this only
+   ;; works in the GUI. (default nil)
+   dotspacemacs-distinguish-gui-tab nil
+   ;; (Not implemented) dotspacemacs-distinguish-gui-ret nil
    ;; The command key used for Evil commands (ex-commands) and
    ;; Emacs commands (M-x).
    ;; By default the command key is `:' so ex-commands are executed like in Vim
@@ -372,10 +388,11 @@ layers configuration. You are free to put any user code."
 
   ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
   ;; yasnippets
-  (add-hook 'yas-before-expand-snippet-hook
-            (lambda ()
-              (add-to-list 'yas-snippet-dirs
-                           (expand-file-name "~/.spacemacs.d/private/snippets"))))
+  (let (private-snippet-dir
+        (expand-file-name "~/.spacemacs.d/private/snippets"))
+    (add-hook 'yas-before-expand-snippet-hook
+              (lambda ()
+                (add-to-list 'yas-snippet-dirs private-snippet-dir))))
 
   (add-hook 'hack-local-variables-hook
             (lambda ()
@@ -429,6 +446,7 @@ layers configuration. You are free to put any user code."
   ;; Enable a blinking cursor
   (blink-cursor-mode t)
 
+  ;; Magit settings
   ;; Fix `magit-blame-quit'
   (evil-leader/set-key "gB" 'magit-blame-quit)
 
@@ -467,6 +485,9 @@ layers configuration. You are free to put any user code."
   ;; Same as "close other tabs" in chrome
   (evil-leader/set-key "wO" 'delete-other-windows)
 
+  ;; helm-ag
+  (setq helm-ag-use-agignore t)
+
   ;; Transparency by default
   (set-frame-parameter (selected-frame) 'alpha
                        (list dotspacemacs-active-transparency
@@ -499,7 +520,13 @@ layers configuration. You are free to put any user code."
  '(ring-bell-function (quote ignore) t)
  '(safe-local-variable-values
    (quote
-    ((eval when
+    ((org-todo-keyword-faces
+      ("ANSWER" . "orange")
+      ("ARCHIVED" . "blue")
+      ("DATE" . "red")
+      ("NEXT" . "#de5577")
+      ("WAITING" . "orange"))
+     (eval when
            (require
             (quote rainbow-mode)
             nil t)
