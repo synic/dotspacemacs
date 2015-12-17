@@ -388,11 +388,11 @@ layers configuration. You are free to put any user code."
 
   ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
   ;; yasnippets
-  (let (private-snippet-dir
+  (setq private-snippet-dir
         (expand-file-name "~/.spacemacs.d/private/snippets"))
-    (add-hook 'yas-before-expand-snippet-hook
-              (lambda ()
-                (add-to-list 'yas-snippet-dirs private-snippet-dir))))
+  (add-hook 'yas-before-expand-snippet-hook
+            (lambda ()
+              (add-to-list 'yas-snippet-dirs private-snippet-dir)))
 
   (add-hook 'hack-local-variables-hook
             (lambda ()
