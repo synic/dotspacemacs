@@ -44,6 +44,7 @@ values."
      colors
      spacemacs-layouts
      vimscript
+     spacemacs-helm
      (c-c++ :variables
             c-c++-enable-clang-support t)
      (shell :variables
