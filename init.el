@@ -38,8 +38,7 @@ values."
      python
      django
      syntax-checking
-     (spell-checking :variables
-                     spell-checking-enable-by-default nil)
+     spell-checking
      version-control
      lua
      colors
