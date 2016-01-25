@@ -494,6 +494,10 @@ layers configuration. You are free to put any user code."
                        (cons dotspacemacs-active-transparency
                              dotspacemacs-inactive-transparency))
 
+
+  ;; Make :enew work
+  (defalias 'enew 'spacemacs/new-empty-buffer)
+
   ;; Bind up user functions
   (evil-leader/set-key "ow" 'ao/what-face)
   (evil-leader/set-key "ob" 'ao/show-file-name)
