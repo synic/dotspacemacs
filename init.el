@@ -491,7 +491,7 @@ layers configuration. You are free to put any user code."
 
   ;; Transparency by default
   (set-frame-parameter (selected-frame) 'alpha
-                       (list dotspacemacs-active-transparency
+                       (cons dotspacemacs-active-transparency
                              dotspacemacs-inactive-transparency))
 
   ;; Bind up user functions
