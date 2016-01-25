@@ -57,7 +57,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dired+
                                       evil-visual-mark-mode
-                                      )
+                                     )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
                                     flycheck-pos-tip)
@@ -502,6 +502,15 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key "ow" 'ao/what-face)
   (evil-leader/set-key "ob" 'ao/show-file-name)
   (evil-leader/set-key "oa" 'avy-goto-char-2)
+
+  ;; Map avy to SPC SPC, where it should be ;-)
+  (evil-leader/set-key "SPC" 'evil-avy-goto-word-or-subword-1)
+
+  ;; Disable smartparents toggles in web-mode, because they screw up formatting
+  ;; for django template variables.  Also re-enables web-mode's default
+  ;; auto-pairing
+  (add-hook 'web-mode-hook 'spacemacs/toggle-smartparens-off 'append)
+  (setq web-mode-enable-auto-pairing t)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -525,21 +534,7 @@ layers configuration. You are free to put any user code."
  '(ring-bell-function (quote ignore) t)
  '(safe-local-variable-values
    (quote
-    ((org-todo-keyword-faces
-      ("ANSWER" . "orange")
-      ("ARCHIVED" . "blue")
-      ("DATE" . "red")
-      ("NEXT" . "#de5577")
-      ("WAITING" . "orange"))
-     (eval when
-           (require
-            (quote rainbow-mode)
-            nil t)
-           (rainbow-mode 1))
-     (python-shell-virtualenv-path . "/Users/synic/.virtualenvs/eventboard.io")
-     (projectile-tags-command . "ctags --exclude=periphlib --exclude=build -Re -f \"%s\" %s")
-     (projectile-tags-command . "ctags --exclude=migrations --exclude=dumps --exclude=media --exclude=.git --exclude=.vagrant --exclude=\"*.js\" --exclude=\"*.css\" --exclude=\"*.html\" --exclude=\"*.scss\" -Re -f \"%s\" %s")
-     (engine . django)))))
+    ((python-shell-virtualenv-path . "/Users/synic/.virtualenvs/eventboard.io")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
