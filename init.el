@@ -24,7 +24,6 @@ values."
      xkcd
      emacs-lisp
      git
-     dash
      yaml
      github
      javascript
@@ -102,9 +101,14 @@ values."
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 1
    ;; List of items to show in the startup buffer. If nil it is disabled.
-   ;; Possible values are: `recents' `bookmarks' `projects'.
+   ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects bookmarks)
+   dotspacemacs-startup-lists '(recents projects)
+   ;; Number of recent files to show in the startup buffer. Ignored if
+   ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
+   dotspacemacs-startup-recent-list-size 5
+   ;; Default major mode of the scratch buffer (default `text-mode')
+   dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
@@ -208,11 +212,15 @@ values."
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 90
+   ;; If non nil show the titles of transient states. (default t)
+   dotspacemacs-show-transient-state-title nil
+   ;; If non nil show the color guide hint for transient state keys. (default t)
+   dotspacemacs-show-transient-state-color-guide nil
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
-   ;; scrolling overrides the default behavior of Emacs which recenters the
-   ;; point when it reaches the top or bottom of the screen. (default t)
+   ;; scrolling overrides the default behavior of Emacs which recenters point
+   ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
@@ -221,6 +229,10 @@ values."
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+   ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
+   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
+   dotspacemacs-smart-closing-parenthesis nil
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
@@ -346,6 +358,8 @@ user code."
 
   ;; Add `~/.emacs.d/themes' to the theme load path, so that our custom themes
   ;; are loadable by placing them in `dotspacemacs-themes`
+  (add-to-list 'custom-theme-load-path
+        (expand-file-name "~/.spacemacs.d/private/themes"))
   (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/")))
 
 (defun dotspacemacs/user-config ()
@@ -490,10 +504,7 @@ layers configuration. You are free to put any user code."
   (setq helm-ag-use-agignore t)
 
   ;; Transparency by default
-  (set-frame-parameter (selected-frame) 'alpha
-                       (cons dotspacemacs-active-transparency
-                             dotspacemacs-inactive-transparency))
-
+  (spacemacs/toggle-transparency)
 
   ;; Make :enew work
   (defalias 'enew 'spacemacs/new-empty-buffer)
@@ -534,7 +545,12 @@ layers configuration. You are free to put any user code."
  '(ring-bell-function (quote ignore) t)
  '(safe-local-variable-values
    (quote
-    ((python-shell-virtualenv-path . "/Users/synic/.virtualenvs/eventboard.io")))))
+    ((eval when
+           (require
+            (quote rainbow-mode)
+            nil t)
+           (rainbow-mode 1))
+     (python-shell-virtualenv-path . "/Users/synic/.virtualenvs/eventboard.io")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
