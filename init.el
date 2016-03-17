@@ -38,12 +38,13 @@ values."
      django
      syntax-checking
      spell-checking
-     version-control
      lua
      colors
      spacemacs-layouts
      vimscript
      spacemacs-helm
+     (version-control :variables
+                      version-control-diff-tool 'diff-hl)
      (c-c++ :variables
             c-c++-enable-clang-support t)
      (shell :variables
@@ -172,8 +173,6 @@ values."
    dotspacemacs-auto-save-file-location 'cache
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
-   ;; If non nil then `ido' replaces `helm' for some commands.
-   dotspacemacs-use-ido nil
    ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
    dotspacemacs-helm-resize nil
    ;; if non nil, the helm header is hidden when there is only one source.
