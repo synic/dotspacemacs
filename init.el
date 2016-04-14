@@ -19,6 +19,9 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     go
+     sql
+     nginx
      unscroll
      auto-completion
      xkcd
@@ -36,6 +39,7 @@ values."
      osx
      python
      django
+     go
      syntax-checking
      spell-checking
      lua
@@ -57,6 +61,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dired+
                                       evil-visual-mark-mode
+                                      dockerfile-mode
                                       zenburn-theme
                                      )
    ;; A list of packages and/or extensions that will not be install and loaded.
@@ -88,10 +93,12 @@ values."
    ;; If non nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. (default t)
    dotspacemacs-check-for-update t
-   ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
-   ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
-   ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
-   ;; unchanged. (default 'vim)
+   ;; One of `vim', `emacs' or `hybrid'.
+   ;; `hybrid' is like `vim' except that `insert state' is replaced by the
+   ;; `hybrid state' with `emacs' key bindings. The value can also be a list
+   ;; with `:variables' keyword (similar to layers). Check the editing styles
+   ;; section of the documentation for details on available variables.
+   ;; (default 'vim)
    dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
@@ -151,6 +158,9 @@ values."
    dotspacemacs-distinguish-gui-tab nil
    ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
    dotspacemacs-remap-Y-to-y$ t
+   ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
+   ;; there. (default t)
+   dotspacemacs-retain-visual-state-on-shift t
    ;; If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
    ;; (default nil)
    dotspacemacs-ex-substitute-global nil
@@ -228,6 +238,9 @@ values."
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
    dotspacemacs-line-numbers t
+   ;; Code folding method. Possible values are `evil' and `origami'.
+   ;; (default 'evil)
+   dotspacemacs-folding-method 'evil
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -398,6 +411,12 @@ you should place you code here."
    ;; Set the default web-mode engine for .html files to "django"
    web-mode-engines-alist '(("django" . "\\.html\\'")))
 
+  ;; set GOPATH for go autocompletion
+  (setenv "GOPATH" "/Users/synic/Projects/go")
+  (setenv "PATH" (concat
+                  "/Users/synic/Projects/go/bin" ":"
+                  (getenv "PATH")))
+
   ;; Disable active process prompt
   (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
     "Prevent annoying \"Active processes exist\" query when you quit Emacs."
@@ -438,6 +457,10 @@ you should place you code here."
               (fci-mode t)
               ;; Turn on line numbering
               (linum-mode t)
+              ;; Set tab-width to 4
+              (setq tab-width 4)
+              ;; Set evil-shift-width to 4
+              (setq evil-shift-width 4)
               ;; Enable automatic line wrapping at fill column
               (auto-fill-mode t)))
 
@@ -482,7 +505,8 @@ you should place you code here."
   (require 'dired-x) ; Enable dired-x
   (require 'dired+)  ; Enable dired+
   (setq-default dired-omit-files-p t)  ; Don't show hidden files by default
-  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$\\|\\.pyc$"))
+  (setq dired-omit-files (concat dired-omit-files
+                                 "\\|^\\..+$\\|\\.pyc$|^__pycache__$"))
   (add-hook 'dired-mode-hook 'ao/dired-omit-caller)
   (define-key evil-normal-state-map (kbd "_") 'projectile-dired)
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
@@ -530,6 +554,9 @@ you should place you code here."
   ;; Map avy to SPC SPC, where it should be ;-)
   (evil-leader/set-key "SPC" 'evil-avy-goto-word-or-subword-1)
 
+  ;; Update diff-hl on the fly
+  (diff-hl-flydiff-mode)
+
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
   ;; auto-pairing
@@ -551,6 +578,7 @@ you should place you code here."
  '(ahs-inhibit-face-list nil)
  '(diredp-hide-details-initially-flag nil)
  '(evil-escape-mode t)
+ '(evil-shift-width 4)
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
