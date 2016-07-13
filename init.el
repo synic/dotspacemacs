@@ -11,20 +11,29 @@ values."
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
+   ;; Lazy installation of layers (i.e. layers are installed only when a file
+   ;; with a supported type is opened). Possible values are `all', `unused'
+   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
+   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
+   ;; lazy install any layer that support lazy installation even the layers
+   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
+   ;; installation feature and you have to explicitly list a layer in the
+   ;; variable `dotspacemacs-configuration-layers' to install it.
+   ;; (default 'unused)
+   dotspacemacs-enable-lazy-installation 'unused
+   ;; If non-nil then Spacemacs will ask for confirmation before installing
+   ;; a layer lazily. (default t)
+   dotspacemacs-ask-for-lazy-installation t
+   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '(
-                                           "~/.spacemacs.d/private")
-   ;; List of configuration layers to load. If it is the symbol `all' instead
-   ;; of a list then all discovered layers will be installed.
+   dotspacemacs-configuration-layer-path '("~/.spacemacs.d/private")
+   ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     go
      sql
-     nginx
      unscroll
      auto-completion
-     xkcd
      emacs-lisp
      git
      yaml
@@ -34,19 +43,16 @@ values."
      markdown
      extra-langs
      python
-     ruby
      org
      osx
      python
      django
-     go
      syntax-checking
      spell-checking
-     lua
      colors
      spacemacs-layouts
      vimscript
-     spacemacs-helm
+     helm
      (version-control :variables
                       version-control-diff-tool 'diff-hl)
      (c-c++ :variables
@@ -60,17 +66,18 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dired+
-                                      evil-visual-mark-mode
                                       dockerfile-mode
-                                      zenburn-theme
-                                     )
-   ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(
-                                    flycheck-pos-tip)
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+                                      zenburn-theme)
+   ;; A list of packages that will not be install and loaded.
+   dotspacemacs-excluded-packages '()
+   ;; Defines the behaviour of Spacemacs when downloading packages.
+   ;; Possible values are `used', `used-but-keep-unused' and `all'. `used' will
+   ;; download only explicitly used packages and remove any unused packages as
+   ;; well as their dependencies. `used-but-keep-unused' will download only the
+   ;; used packages but won't delete them if they become unused. `all' will
+   ;; download all the packages regardless if they are used or not and packages
+   ;; won't be deleted by Spacemacs. (default is `used')
+   dotspacemacs-download-packages 'used))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -109,19 +116,19 @@ values."
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 1
-   ;; List of items to show in the startup buffer. If nil it is disabled.
-   ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
-   ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
-   ;; Number of recent files to show in the startup buffer. Ignored if
-   ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
-   dotspacemacs-startup-recent-list-size 5
+   ;; List of items to show in startup buffer or an association list of of
+   ;; the form `(list-type . list-size)`. If nil it is disabled.
+   ;; Possible values for list-type are:
+   ;; `recents' `bookmarks' `projects' `agenda' `todos'."
+   dotspacemacs-startup-lists '((recents . 5)
+                                (projects . 7))
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         zenburn
                          jbeans
                          spacemacs-dark
                          spacemacs-light
@@ -161,6 +168,9 @@ values."
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
    ;; there. (default t)
    dotspacemacs-retain-visual-state-on-shift t
+   ;; If non-nil, J and K move lines up and down when in visual mode.
+   ;; (default nil)
+   dotspacemacs-visual-line-move-text nil
    ;; If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
    ;; (default nil)
    dotspacemacs-ex-substitute-global nil
@@ -540,9 +550,6 @@ you should place you code here."
   ;; helm-ag
   (setq helm-ag-use-agignore t)
 
-  ;; Transparency by default
-  (spacemacs/toggle-transparency)
-
   ;; Make :enew work
   (defalias 'enew 'spacemacs/new-empty-buffer)
 
@@ -551,8 +558,11 @@ you should place you code here."
   (evil-leader/set-key "ob" 'ao/show-file-name)
   (evil-leader/set-key "oa" 'avy-goto-char-2)
 
-  ;; Map avy to SPC SPC, where it should be ;-)
+  ;; Map avy to `SPC SPC', where it should be ;-)
   (evil-leader/set-key "SPC" 'evil-avy-goto-word-or-subword-1)
+
+  ;; Map avy window to `SPC w SPC', where it should be ;-)
+  (evil-leader/set-key "w <SPC>" 'ace-window)
 
   ;; Update diff-hl on the fly
   (diff-hl-flydiff-mode)
