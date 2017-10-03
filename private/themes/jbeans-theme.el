@@ -1,1 +1,1 @@
-/Users/synic/Projects/jbeans-emacs/jbeans-theme.el
+/home/synic/Projects/jbeans-emacs/jbeans-theme.el
