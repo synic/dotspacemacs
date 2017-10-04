@@ -30,6 +30,7 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     csv
      lua
      nginx
      sql
@@ -37,7 +38,6 @@ This function should only modify configuration layer settings."
      emacs-lisp
      git
      yaml
-     github
      javascript
      html
      markdown
@@ -46,6 +46,7 @@ This function should only modify configuration layer settings."
      org
      osx
      python
+     ipython-notebook
      django
      syntax-checking
      spell-checking
@@ -69,6 +70,9 @@ This function should only modify configuration layer settings."
                                       dockerfile-mode
                                       restclient
                                       zenburn-theme
+                                      darktooth-theme
+                                      wakatime-mode
+                                      gruvbox-theme
                                       )
    ;; A list of packages that cannot be updated.
    dotpsacemacs-frozen-packages '()
@@ -147,6 +151,8 @@ It should only modify the values of Spacemacs settings."
                          zenburn
                          spacemacs-dark
                          spacemacs-light
+                         darktooth
+                         gruvbox
                          )
    ;; if non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -493,9 +499,9 @@ you should place your code here."
    web-mode-engines-alist '(("django" . "\\.html\\'")))
 
   ;; set GOPATH for go autocompletion
-  (setenv "GOPATH" "/Users/synic/Projects/go")
+  (setenv "GOPATH" "/Users/adam.olsen/Projects/go")
   (setenv "PATH" (concat
-                  "/Users/synic/Projects/go/bin" ":"
+                  "/Users/adam.olsen/Projects/go/bin" ":"
                   (getenv "PATH")))
 
   ;; Disable active process prompt
@@ -539,6 +545,7 @@ you should place your code here."
               (fci-mode t)
               ;; Turn on line numbering
               (linum-mode t)
+              (setq fill-column 79)
               ;; Set tab-width to 4
               (setq tab-width 4
                     evil-shift-width 4)
@@ -548,7 +555,7 @@ you should place your code here."
   ;; ReST
   (add-hook `rst-mode-hook
             (lambda ()
-              (setq fill-column 80
+              (setq fill-column 79
                     tab-width 3
                     evil-shift-width 3)
               (auto-fill-mode t)))
@@ -559,7 +566,7 @@ you should place your code here."
                 (fci-mode t)
                 (auto-fill-mode t)
                 (linum-mode t)
-                (setq fill-column 80
+                (setq fill-column 79
                       tab-width 2
                       evil-shift-width 2)))
 
@@ -569,7 +576,7 @@ you should place your code here."
               (fci-mode t)
               (auto-fill-mode t)
               (linum-mode t)
-              (setq fill-column 80
+              (setq fill-column 79
                     tab-width 2
                     evil-shift-width 2)))
 
@@ -591,7 +598,7 @@ you should place your code here."
               (auto-fill-mode t)
               (fci-mode t)
               (linum-mode t)
-              (setq fill-column 80
+              (setq fill-column 79
                     tab-width 2
                     evil-shift-width 2)))
 
@@ -664,6 +671,8 @@ you should place your code here."
 
   ;; helm-ag
   (setq helm-ag-use-agignore t)
+  (setq helm-ag-base-command
+        "ag --nocolor --nogroup --cc --csharp --python --cpp --go --java --lisp")
 
   ;; Make :enew work
   (defalias 'enew 'spacemacs/new-empty-buffer)
@@ -692,6 +701,12 @@ you should place your code here."
 
   ;; format linum correctly
   (setq linum-format "%3i ")
+
+  ;; open gists automatically after creating them
+  (setq gist-view-gist t)
+
+  ;; enable wakatime
+  (global-wakatime-mode)
 
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
@@ -726,7 +741,7 @@ This function is called at the very end of Spacemacs initialization."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (vala-snippets vala-mode symon string-inflection realgud test-simple loc-changes load-relative pkgbuild-mode password-generator org-brain logcat kivy-mode impatient-mode hoon-mode evil-org evil-lion editorconfig ebuild-mode company-lua cmake-ide levenshtein browse-at-remote jbeans-theme winum magithub fuzzy autothemer hide-comnt helm-purpose window-purpose imenu-list lua-mode nginx-mode pug-mode origami vimish-fold wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy restclient osx-dictionary py-isort dumb-jump powerline spinner org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode hydra parent-mode projectile request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight diminish web-completion-data tern pos-tip company bind-map bind-key yasnippet packed anaconda-mode pythonic f s helm avy helm-core async auto-complete popup package-build dash-functional dash zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters quelpa qml-mode pyvenv pytest pyenv-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dockerfile-mode disaster dired+ diff-hl define-word dactyl-mode cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (gruvbox-theme vala-snippets vala-mode symon pkgbuild-mode org-brain logcat kivy-mode impatient-mode hoon-mode evil-org ebuild-mode cmake-ide levenshtein evil-lion browse-at-remote sparql-mode password-generator editorconfig realgud test-simple loc-changes load-relative magithub ghub+ apiwrap ghub company-lua wakatime-mode winum jbeans-theme ein string-inflection csv-mode autothemer hide-comnt helm-purpose window-purpose imenu-list lua-mode nginx-mode pug-mode origami vimish-fold wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy restclient osx-dictionary py-isort dumb-jump powerline spinner org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode hydra parent-mode projectile request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight diminish web-completion-data tern pos-tip company bind-map bind-key yasnippet packed anaconda-mode pythonic f s helm avy helm-core async auto-complete popup package-build dash-functional dash zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters quelpa qml-mode pyvenv pytest pyenv-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dockerfile-mode disaster dired+ diff-hl define-word dactyl-mode cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t)
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(ring-bell-function (quote ignore))
@@ -736,15 +751,15 @@ This function is called at the very end of Spacemacs initialization."
            (fboundp
             (quote rainbow-mode))
            (rainbow-mode 1))
-     (python-shell-virtualenv-root . "/Users/synic/.virtualenvs/skedup")
-     (python-shell-virtualenv-root . "/Users/synic/.virtualenvs/eventboard.io")
-     (python-shell-virtualenv-path . "/Users/synic/.virtualenvs/skedup")
+     (python-shell-virtualenv-root . "/Users/adam.olsen/.virtualenvs/skedup")
+     (python-shell-virtualenv-root . "/Users/adam.olsen/.virtualenvs/eventboard.io")
+     (python-shell-virtualenv-path . "/Users/adam.olsen/.virtualenvs/skedup")
      (eval when
            (require
             (quote rainbow-mode)
             nil t)
            (rainbow-mode 1))
-     (python-shell-virtualenv-path . "/Users/synic/.virtualenvs/eventboard.io"))))
+     (python-shell-virtualenv-path . "/Users/adam.olsen/.virtualenvs/eventboard.io"))))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    (quote
@@ -772,7 +787,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :foundry "nil" :slant normal :weight normal :height 90 :width normal))))
  '(aw-leading-char-face ((t (:inherit aw-mode-line-face :height 1.2))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
