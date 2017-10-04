@@ -595,10 +595,18 @@ you should place your code here."
                     tab-width 2
                     evil-shift-width 2)))
 
+  ;; css
+  (add-hook 'css-mode-hook
+            (lambda ()
+              (setq tab-width 2
+                    fill-column 79
+                    evil-shift-width 2)))
+
   ;; web (html)
   (add-hook 'web-mode-hook
             (lambda ()
-              (setq tab-width 2
+              (setq fill-column 79
+                    tab-width 2
                     evil-shift-width 2
                     web-mode-css-indent-offset 2
                     web-mode-code-indent-offset 2
