@@ -708,7 +708,7 @@ you should place your code here."
 
   ;; enable wakatime
   (setq wakatime-python-bin "/usr/bin/python")
-  ;; (global-wakatime-mode)
+  (global-wakatime-mode)
 
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
