@@ -70,12 +70,13 @@ This function should only modify configuration layer settings."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dired+
                                       dockerfile-mode
+                                      rainbow-mode
                                       restclient
                                       zenburn-theme
                                       darktooth-theme
                                       handlebars-mode
-                                      wakatime-mode
                                       gruvbox-theme
+                                      wakatime-mode
                                       )
    ;; A list of packages that cannot be updated.
    dotpsacemacs-frozen-packages '()
@@ -700,8 +701,7 @@ you should place your code here."
 
   ;; helm-ag
   (setq helm-ag-use-agignore t)
-  (setq helm-ag-base-command
-        "ag --nocolor --nogroup --cc --csharp --python --cpp --go --java --lisp")
+  (setq helm-ag-base-command "ag --nocolor --nogroup")
 
   ;; Make :enew work
   (defalias 'enew 'spacemacs/new-empty-buffer)
@@ -735,6 +735,10 @@ you should place your code here."
   ;; enable wakatime
   (setq wakatime-python-bin "/usr/bin/python")
   (global-wakatime-mode)
+
+  ;; disable annoying lockfiles
+  (setq create-lockfiles nil)
+
 
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
