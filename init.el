@@ -72,13 +72,15 @@ This function should only modify configuration layer settings."
                                       restclient
                                       zenburn-theme
                                       darktooth-theme
-                                      wakatime-mode
                                       gruvbox-theme
+                                      wakatime-mode
+                                      yasnippet-snippets
                                       )
    ;; A list of packages that cannot be updated.
    dotpsacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(smartparens
+                                    wolfram-mode
                                     window-purpose)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -518,7 +520,7 @@ you should place your code here."
   (setq-default cursor-in-non-selected-windows 'bar)
 
   ;; set up evil escape
-  (setq-default evil-escape-key-sequence "fd"
+  (setq-default evil-escape-key-sequence "jk"
                 evil-escape-delay .2)
 
   ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
@@ -707,6 +709,9 @@ you should place your code here."
   ;; enable wakatime
   (global-wakatime-mode)
 
+  ;; disable lock files because they screw up the ember server
+  (setq create-lockfiles nil)
+
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
   ;; auto-pairing
@@ -797,10 +802,18 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (yasnippet-snippets iedit org-mime bind-key highlight goto-chg flyspell-correct epl ghub let-alist pythonic alert dash-functional f org-category-capture projectile request-deferred websocket packed avy anaconda-mode tern smartparens magit magit-popup evil flycheck git-commit with-editor company helm helm-core async yasnippet multiple-cursors skewer-mode js2-mode simple-httpd markdown-mode org-plus-contrib hydra haml-mode powerline dash s swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(safe-local-variable-values
+   (quote
+    ((encoding . utf-8)
+     (eval when
+           (require
+            (quote rainbow-mode)
+            nil t)
+           (rainbow-mode 1))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((((class color) (min-colors 89)) (:foreground "#cccccc" :background "#151515")))))
