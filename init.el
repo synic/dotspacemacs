@@ -596,6 +596,15 @@ you should place your code here."
    ;; Set the default web-mode engine for .html files to "django"
    web-mode-engines-alist '(("django" . "\\.html\\'")))
 
+  ;; prevent getting into insert mode permanently (which ends up causing `d` to
+  ;; act like `dd`.
+  (defun kill-minibuffer ()
+    (interactive)
+    (when (windowp (active-minibuffer-window))
+      (evil-ex-search-exit)))
+
+  (add-hook 'mouse-leave-buffer-hook #'kill-minibuffer)
+
   ;; set GOPATH for go autocompletion
   (setenv "GOPATH" "/Users/adam.olsen/Projects/go")
   (setenv "PATH" (concat
