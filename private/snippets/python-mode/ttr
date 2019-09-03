@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: IPDB in docker
+# key: ttr
+# binding: direct-keybinding
+# --
+import ipdb; ipdb.sset_trace()  # TODO: remove this
