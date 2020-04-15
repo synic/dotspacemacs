@@ -83,6 +83,7 @@ This function should only modify configuration layer settings."
                                       wakatime-mode
                                       yasnippet-snippets
                                       handlebars-mode
+                                      editorconfig
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -626,15 +627,6 @@ you should place your code here."
   ;; set up evil escape
   (setq-default evil-escape-key-sequence "jk"
                 evil-escape-delay .2)
-
-  ;; Add `~/.spacepacs.d/private/snippets/' as a path to look for snippets for
-  ;; yasnippets
-  (setq private-yas-dir
-        (expand-file-name "~/.spacemacs.d/private/snippets"))
-
-  (add-hook 'yas-before-expand-snippet-hook
-            (lambda ()
-              (add-to-list 'yas-snippet-dirs private-yas-dir)))
 
   (add-hook 'hack-local-variables-hook
             (lambda ()

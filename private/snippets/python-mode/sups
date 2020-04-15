@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: SuperTestTest
-# key: supt
-# binding: direct-keybinding
-# --
-if getattr(settings, 'SUPERTEST', False):
-    import ipdb
-    ipdb.set_trace()
