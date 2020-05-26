@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: django gettext
+# key: dgettext
+# binding: direct-keybinding
+# --
+from django.utils.translation import gettext_lazy as _
