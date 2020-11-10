@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: django cached property
+# key: dcprop
+# binding: direct-keybinding
+# --
+from django.utils.functional import cached_property
