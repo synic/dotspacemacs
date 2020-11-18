@@ -688,6 +688,8 @@ you should place your code here."
               ;; Turn on line numbering
               ;; (linum-mode t)
               (setq fill-column 79)
+              ;; set in-block indentation scale
+              (setq python-indent-def-block-scale 1)
               ;; Set tab-width to 4
               (setq tab-width 4
                     evil-shift-width 4)
