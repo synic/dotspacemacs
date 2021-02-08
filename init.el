@@ -290,6 +290,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non nil then the last auto saved layouts are resume automatically upon
    ;; start. (default nil)
    dotspacemacs-auto-resume-layouts nil
+   spacemacs-force-resume-layouts nil
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -660,6 +661,7 @@ you should place your code here."
     (flet ((process-list ())) ad-do-it))
 
   ;; Enable highlighting of git commit messages when emacs is $EDITOR
+  (require 'git-commit)
   (global-git-commit-mode t)
 
   ;; Make the cursor in non-focused windows a bar, so you can see the ace-window
@@ -818,6 +820,7 @@ you should place your code here."
              [mouse-1] 'diredp-find-file-reuse-dir-buffer
              [mouse-2] 'dired-find-alternate-file
              "f"  'helm-find-files
+             "r"  'dired-do-redisplay
              "h"  'diredp-up-directory-reuse-dir-buffer
              "l"  'diredp-find-file-reuse-dir-buffer
              "I"  'ao/dired-omit-switch
