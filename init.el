@@ -33,40 +33,52 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(perl5
-     go
-     swift
-     csv
-     lua
-     nginx
-     sql
+   '(
      auto-completion
+     colors
+     csv
+     dap
+     django
      emacs-lisp
      git
-     yaml
-     javascript
+     go
+     helm
      html
+     ipython-notebook
+     javascript
+     lua
      markdown
      major-modes
-     python
+     nginx
      org
      osx
-     python
-     ipython-notebook
-     django
-     syntax-checking
-     spell-checking
-     colors
+     perl5
+     rust
      spacemacs-layouts
+     spell-checking
+     swift
+     syntax-checking
+     sql
+     yaml
      vimscript
-     helm
-     (version-control :variables
-                      version-control-diff-tool 'diff-hl)
+
+     (elm :variables
+          elm-sort-imports-on-save t
+          elm-format-on-save t)
+     (python :variables python-backend 'anaconda)
      (c-c++ :variables
             c-c++-enable-clang-support t)
+     (lsp :variables
+          lsp-headerline-breadcrumb-enable nil)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
+     (typescript :variables
+                 typescript-backend 'lsp
+                 typescript-fmt-tool 'prettier
+                 typescript-fmt-on-save t)
+     (version-control :variables
+                      version-control-diff-tool 'diff-hl)
      )
 
    ;; List of additional packages that will be installed without being
@@ -85,6 +97,7 @@ This function should only modify configuration layer settings."
                                       handlebars-mode
                                       editorconfig
                                       vue-mode
+                                      python-black
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -392,6 +405,7 @@ It should only modify the values of Spacemacs settings."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
+   dotspacemacs-scroll-bar-while-scrolling nil
 
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
@@ -682,6 +696,9 @@ you should place your code here."
   (global-vi-tilde-fringe-mode -1)
 
   ;; Python hooks
+  (setq-default lsp-pyls-configuration-sources ["flake8"])
+  (setq-default lsp-pyls-plugins-pylint-enabled nil)
+
   (add-hook 'python-mode-hook
             (lambda ()
               ;; Enable fill column indicator
@@ -780,6 +797,17 @@ you should place your code here."
                     indent-tabs-mode nil
                     evil-shift-width 2)))
 
+  ;; typescript
+  (setq-default typescript-indent-level 2)
+  (add-hook 'typescript-mode
+            (lambda ()
+              (display-fill-column-indicator-mode)
+              (setq tab-width 2
+                    c-basic-offset 2
+                    typescript-indent-level 2
+                    indent-tabs-mode nil
+                    evil-shift-width 2)))
+
   ;; web (html)
   (add-hook 'web-mode-hook
             (lambda ()
@@ -804,6 +832,9 @@ you should place your code here."
   ;; Fix `magit-blame-quit'
   (evil-leader/set-key "gB" 'magit-blame-quit)
 
+  (setq exec-path
+        (append exec-path '("/home/synic/.nvm/versions/node/v16.10.0/bin")))
+
   ;; Dired
   (require 'dired-x) ; Enable dired-x
   (require 'dired+)  ; Enable dired+
@@ -814,7 +845,6 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "_") 'projectile-dired)
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
   (setq diredp-hide-details-initially-flag nil)
-  ;; Make `gg' and `G' do the correct thing
   (with-eval-after-load 'dired
     (evilified-state-evilify dired-mode dired-mode-map
              [mouse-1] 'diredp-find-file-reuse-dir-buffer
@@ -827,6 +857,13 @@ you should place your code here."
              "c"  'helm-find-files
              "gg" 'ao/dired-back-to-top
              "G"  'ao/dired-jump-to-bottom))
+
+  (defun lsp-set-cfg ()
+    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+      ;; TODO: check lsp--cur-workspace here to decide per server / project
+      (lsp--set-configuration lsp-cfg)))
+
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
 
   ;; Bind SPC k ' to `ielm'
   (evil-leader/set-key "k'" 'ielm)
@@ -883,6 +920,10 @@ you should place your code here."
   ;; turn on wakatime
   (global-wakatime-mode)
 
+  (if (not (require 'dap-node))
+      (progn (dap-node-setup)
+             (require 'dap-node)))
+
   ;; Disable smartparents toggles in web-mode, because they screw up formatting
   ;; for django template variables.  Also re-enables web-mode's default
   ;; auto-pairing
@@ -903,10 +944,49 @@ This function is called at the very end of Spacemacs initialization."
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(evil-want-Y-yank-to-eol t)
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
+ '(org-fontify-done-headline nil)
+ '(org-fontify-todo-headline nil)
  '(package-selected-packages
-   '(realgud test-simple loc-changes load-relative company-plsense lv transient polymode anaphora editorconfig yasnippet-snippets org-mime ghub handlebars-mode powerline spinner org-category-capture alert log4e gntp org-plus-contrib markdown-mode json-snatcher json-reformat multiple-cursors hydra parent-mode projectile haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight skewer-mode request-deferred websocket request deferred js2-mode simple-httpd diminish autothemer web-completion-data dash-functional tern company bind-map bind-key yasnippet packed anaconda-mode pythonic f dash s helm avy helm-core async auto-complete popup go-guru go-eldoc company-go go-mode swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
+   '(lsp-ui lsp-python-ms lsp-pyright lsp-origami origami helm-lsp dap-mode lsp-treemacs bui ccls lsp-mode lv transient polymode anaphora editorconfig yasnippet-snippets org-mime ghub handlebars-mode powerline spinner org-category-capture alert log4e gntp org-plus-contrib markdown-mode json-snatcher json-reformat multiple-cursors hydra parent-mode projectile haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight skewer-mode request-deferred websocket request deferred js2-mode simple-httpd diminish autothemer web-completion-data dash-functional tern company bind-map bind-key yasnippet packed anaconda-mode pythonic f dash s helm avy helm-core async auto-complete popup go-guru go-eldoc company-go go-mode swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
+ '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e"))
  '(safe-local-variable-values
-   '((eval when
+   '((flycheck-checker quote python-flake8)
+     (flycheck--automatically-disabled-checkers quote
+                                                (python-pylint lsp python-pycompile))
+     (flycheck-add-next-checker 'python-flake8 'lsp)
+     (flycheck--automatically-enabled-checkers quote
+                                               (python-flake8))
+     (flycheck-add-next-checker 'python-flake8)
+     (flycheck-enabled-checkers quote
+                                (python-flake8))
+     (eval flycheck-select-checker 'python-flake8)
+     (lsp-pylsp-plugins-flake8-config . "/home/synic/Projects/defiq-coinprice-lambda/.flake8")
+     (flycheck-disabled-checkers quote
+                                 (python-pylint lsp python-pycompile))
+     (flycheck-disabled-checkers quote
+                                 (python-pylint python-pycompile))
+     (prettier-js-args
+      `("--config /home/synic/Projects/defiq-backend/.prettierrc --write"))
+     (flycheck-disabled-checkers quote
+                                 (python-pylint))
+     (auto-fill-mode . -1)
+     (eval when
            (require 'rainbow-mode nil t)
            (rainbow-mode 1))))
  '(wakatime-cli-path "/usr/local/bin/wakatime")
