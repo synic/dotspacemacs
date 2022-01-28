@@ -97,6 +97,7 @@ This function should only modify configuration layer settings."
                                       yasnippet-snippets
                                       handlebars-mode
                                       editorconfig
+                                      graphql-mode
                                       vue-mode
                                       python-black
                                       )
@@ -865,6 +866,10 @@ you should place your code here."
       (lsp--set-configuration lsp-cfg)))
 
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
+  (defun lsp-typescript-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'typescript-mode-hook #'lsp-typescript-install-save-hooks)
 
   ;; Bind SPC k ' to `ielm'
   (evil-leader/set-key "k'" 'ielm)
