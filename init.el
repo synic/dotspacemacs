@@ -706,18 +706,6 @@ you should place your code here."
   (setq-default lsp-pyls-configuration-sources ["flake8"])
   (setq-default lsp-pyls-plugins-pylint-enabled nil)
 
-  ;; send pyls config via lsp-after-initialize-hook -- harmless for
-  ;; other servers due to pyls key, but would prefer only sending this
-  ;; when pyls gets initialised (:initialize function in
-  ;; lsp-define-stdio-client is invoked too early (before server
-  ;; start)) -- cpbotha
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
-
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
-
   (add-hook 'python-mode-hook
             (lambda ()
               ;; Enable fill column indicator
@@ -878,12 +866,6 @@ you should place your code here."
              "gg" 'ao/dired-back-to-top
              "G"  'ao/dired-jump-to-bottom))
 
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
-
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
   (defun lsp-typescript-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
@@ -947,13 +929,7 @@ you should place your code here."
   (if (not (require 'dap-node))
       (progn (dap-node-setup)
              (require 'dap-node)))
-
-  ;; Disable smartparents toggles in web-mode, because they screw up formatting
-  ;; for django template variables.  Also re-enables web-mode's default
-  ;; auto-pairing
-  ;; (add-hook 'web-mode-hook 'spacemacs/toggle-smartparens-off 'append)
-  ;; (setq web-mode-enable-auto-pairing t)
-  )
+)
 
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
