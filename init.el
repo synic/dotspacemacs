@@ -98,7 +98,6 @@ This function should only modify configuration layer settings."
                                       zenburn-theme
                                       darktooth-theme
                                       gruvbox-theme
-                                      wakatime-mode
                                       yasnippet-snippets
                                       handlebars-mode
                                       editorconfig
@@ -614,6 +613,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; disable .zshrc env warnings, they aren't your mom
   (setq exec-path-from-shell-check-startup-files nil)
 
+  ;; enable projectile caching
+  (setq projectile-enable-caching 1)
+
   ;; Restore Frame size and location, if we are using gui emacs
   (if window-system
       (progn
@@ -924,7 +926,7 @@ you should place your code here."
   (setq create-lockfiles nil)
 
   ;; turn on wakatime
-  (global-wakatime-mode)
+  ;; (global-wakatime-mode)
 
   (if (not (require 'dap-node))
       (progn (dap-node-setup)
@@ -988,7 +990,8 @@ This function is called at the very end of Spacemacs initialization."
            (require 'rainbow-mode nil t)
            (rainbow-mode 1))))
  '(wakatime-cli-path "/usr/local/bin/wakatime")
- '(wakatime-python-bin nil))
+ '(wakatime-python-bin nil)
+ '(warning-suppress-types '((emacs))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
