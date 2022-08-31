@@ -33,7 +33,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(dart
+   '(react
+     protobuf
+     dart
      ruby
      auto-completion
      colors
@@ -93,6 +95,7 @@ This function should only modify configuration layer settings."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(dockerfile-mode
                                       rainbow-mode
+                                      dired
                                       restclient
                                       jbeans-theme
                                       zenburn-theme
@@ -663,6 +666,8 @@ you should place your code here."
    ;; Set the default web-mode engine for .html files to "django"
    web-mode-engines-alist '(("django" . "\\.html\\'")))
 
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+
   ;; prevent getting into insert mode permanently (which ends up causing `d` to
   ;; act like `dd`.
   (defun kill-minibuffer ()
@@ -856,17 +861,19 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "-") 'dired-jump)
   (setq diredp-hide-details-initially-flag nil)
   (with-eval-after-load 'dired
-    (evilified-state-evilify dired-mode dired-mode-map
-             [mouse-1] 'diredp-find-file-reuse-dir-buffer
-             [mouse-2] 'dired-find-alternate-file
-             "f"  'helm-find-files
-             "r"  'dired-do-redisplay
-             "h"  'diredp-up-directory-reuse-dir-buffer
-             "l"  'diredp-find-file-reuse-dir-buffer
-             "I"  'ao/dired-omit-switch
-             "c"  'helm-find-files
-             "gg" 'ao/dired-back-to-top
-             "G"  'ao/dired-jump-to-bottom))
+    (evilified-state-evilify-map dired-mode-map
+      :mode dired-mode
+      :bindings
+          [mouse-1] 'diredp-find-file-reuse-dir-buffer
+          [mouse-2] 'dired-find-alternate-file
+          "f"  'helm-find-files
+          "r"  'dired-do-redisplay
+          "h"  'diredp-up-directory-reuse-dir-buffer
+          "l"  'diredp-find-file-reuse-dir-buffer
+          "I"  'ao/dired-omit-switch
+          "c"  'helm-find-files
+          "gg" 'ao/dired-back-to-top
+          "G"  'ao/dired-jump-to-bottom))
 
   (defun lsp-typescript-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
@@ -897,18 +904,27 @@ you should place your code here."
   (require 'helm-bookmark)
 
   ;; Bind up user functions
-  (evil-leader/set-key "ow" 'ao/what-face)
-  (evil-leader/set-key "ob" 'ao/show-file-name)
-  (evil-leader/set-key "oa" 'avy-goto-char-2)
+  ;; (evil-leader/set-key "ow" 'ao/what-face)
+  ;; (evil-leader/set-key "ob" 'ao/show-file-name)
+  ;; (evil-leader/set-key "oa" 'avy-goto-char-2)
 
-  ;; set `SPC sp' to project literal search
-  (evil-leader/set-key "sp" 'ao/project-literal-search)
+  ;; ;; set `SPC sp' to project literal search
+  ;; (evil-leader/set-key "sp" 'ao/project-literal-search)
 
-  ;; Map avy to `SPC SPC', where it should be ;-)
-  (evil-leader/set-key "SPC" 'evil-avy-goto-word-or-subword-1)
+  ;; ;; Map avy to `SPC SPC', where it should be ;-)
+  ;; (evil-leader/set-key "SPC" 'evil-avy-goto-word-or-subword-1)
 
-  ;; Map avy window to `SPC w SPC', where it should be ;-)
-  (evil-leader/set-key "w <SPC>" 'ace-window)
+  ;; ;; Map avy window to `SPC w SPC', where it should be ;-)
+  ;; (evil-leader/set-key "w <SPC>" 'ace-window)
+
+  (spacemacs/declare-prefix "o" "own menu")
+  (spacemacs/set-leader-keys
+    "ow" 'ao/what-face
+    "ob" 'ao/show-file-name
+    "oa" 'avy-goto-char-2
+    "SPC" 'avy-goto-word-or-subword-1
+    "w <SPC>" 'ace-window
+   )
 
   ;; Update diff-hl on the fly
   (diff-hl-flydiff-mode)
@@ -946,6 +962,7 @@ This function is called at the very end of Spacemacs initialization."
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(evil-want-Y-yank-to-eol t)
+ '(flycheck-checker-error-threshold 2400)
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
@@ -965,39 +982,15 @@ This function is called at the very end of Spacemacs initialization."
  '(org-fontify-done-headline nil)
  '(org-fontify-todo-headline nil)
  '(package-selected-packages
-   '(lsp-dart flutter dart-server dart-mode lv transient polymode anaphora editorconfig yasnippet-snippets org-mime ghub handlebars-mode powerline spinner org-category-capture alert log4e gntp org-plus-contrib markdown-mode json-snatcher json-reformat multiple-cursors hydra parent-mode projectile haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight skewer-mode request-deferred websocket request deferred js2-mode simple-httpd diminish autothemer web-completion-data dash-functional tern company bind-map bind-key yasnippet packed anaconda-mode pythonic f dash s helm avy helm-core async auto-complete popup go-guru go-eldoc company-go go-mode swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
+   '(rjsx-mode import-js grizzl add-node-modules-path lv transient polymode anaphora editorconfig yasnippet-snippets org-mime ghub handlebars-mode powerline spinner org-category-capture alert log4e gntp org-plus-contrib markdown-mode json-snatcher json-reformat multiple-cursors hydra parent-mode projectile haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flycheck pkg-info epl flx magit magit-popup git-commit with-editor smartparens iedit anzu evil goto-chg undo-tree highlight skewer-mode request-deferred websocket request deferred js2-mode simple-httpd diminish autothemer web-completion-data dash-functional tern company bind-map bind-key yasnippet packed anaconda-mode pythonic f dash s helm avy helm-core async auto-complete popup go-guru go-eldoc company-go go-mode swift-mode zenburn-theme yapfify yaml-mode xterm-color ws-butler wolfram-mode winum which-key web-mode web-beautify wakatime-mode volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pony-mode pip-requirements persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file nginx-mode neotree multi-term move-text mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jbeans-theme info+ indent-guide hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag gruvbox-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein dumb-jump dockerfile-mode disaster dired+ diff-hl darktooth-theme dactyl-mode cython-mode csv-mode company-web company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
  '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e"))
  '(safe-local-variable-values
-   '((flycheck--automatically-disabled-checkers python-pylint)
-     (flycheck--automatically-enabled-checkers python-flake8)
-     (lsp-pylsp-plugins-flake8-config . "/home/synic/Projects/defiq-coinprice-lambda/.flake8rc")
-     (flycheck--automatically-disabled-checkers 'python-pylint 'lsp)
-     (flycheck-python-mypy-executable . "/home/synic/.virtualenvs/defiq-coinprice-lambda/bin/mypy")
-     (flycheck--automatically-enabled-checkers 'python-flake8)
-     (flycheck-checker quote 'python-flake8)
-     (prettier-js-args
-      `("--config /home/synic/Projects/defiq-backend/.prettierrc --write"))
-     (flycheck-disabled-checkers quote
-                                 (python-pylint))
-     (lsp-pylsp-plugins-flake8-config . "/home/synic/Projects/defiq-coinprice-lambda/.flake8")
-     (auto-fill-mode . -1)
-     (typescript-backend . tide)
-     (typescript-backend . lsp)
-     (javascript-backend . tide)
-     (javascript-backend . tern)
-     (javascript-backend . lsp)
-     (eval when
+   '((eval when
            (require 'rainbow-mode nil t)
            (rainbow-mode 1))))
  '(wakatime-cli-path "/usr/local/bin/wakatime")
  '(wakatime-python-bin nil)
  '(warning-suppress-types '((emacs))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :foundry "simp" :slant normal :weight normal :height 68 :width normal)))))
 )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -1019,9 +1012,3 @@ This function is called at the very end of Spacemacs initialization."
            (rainbow-mode 1)))))
  '(wakatime-cli-path "/usr/local/bin/wakatime")
  '(wakatime-python-bin nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :foundry "simp" :slant normal :weight normal :height 68 :width normal)))))
